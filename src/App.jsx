@@ -21,10 +21,27 @@ export const App = () => {
   const [isReversed, setIsReversed] = useState(false);
 
   const toggleReverse = () => {
-    setIsReversed(prev => !prev);
+    setIsReversed(prev => {
+      const newValue = !prev;
+
+      let sorted;
+
+      if (sortField === 'alphabet') {
+        sorted = [...goodsFromServer].sort((a, b) => a.localeCompare(b));
+      } else if (sortField === 'length') {
+        sorted = [...goodsFromServer].sort((a, b) => a.length - b.length);
+      } else {
+        sorted = [...goodsFromServer];
+      }
+
+      setGoods(newValue ? [...sorted].reverse() : sorted);
+
+      return newValue;
+    });
   };
 
-  const applySort = (sortedArray) => {
+
+  const applySort = sortedArray => {
     return isReversed ? [...sortedArray].reverse() : sortedArray;
   };
 
@@ -35,30 +52,27 @@ export const App = () => {
   };
 
   const sortByAlphabet = () => {
-    const sorted = [...goods].sort((a, b) => a.localeCompare(b));
+    const sorted = [...goodsFromServer].sort((a, b) => a.localeCompare(b));
     setGoods(applySort(sorted));
     setSortField('alphabet');
   };
 
   const sortByLength = () => {
-    const sorted = [...goods].sort((a, b) => a.length - b.length);
+    const sorted = [...goodsFromServer].sort((a, b) => a.length - b.length);
     setGoods(applySort(sorted));
     setSortField('length');
   };
 
   const isModified =
-    sortField !== '' ||
-    isReversed ||
-    goods.join() !== goodsFromServer.join();
-
+    sortField !== '' || isReversed || goods.join() !== goodsFromServer.join();
 
   return (
     <div className="section content">
-
       <div className="buttons">
         <button
           className={`button is-info ${sortField === 'alphabet' ? '' : 'is-light'}`}
           onClick={sortByAlphabet}
+          type="button"
         >
           Sort alphabetically
         </button>
@@ -68,6 +82,7 @@ export const App = () => {
         <button
           className={`button is-success ${sortField === 'length' ? '' : 'is-light'}`}
           onClick={sortByLength}
+          type="button"
         >
           Sort by length
         </button>
@@ -77,6 +92,7 @@ export const App = () => {
         <button
           className={`button is-warning ${isReversed ? '' : 'is-light'}`}
           onClick={toggleReverse}
+          type="button"
         >
           Reverse {isReversed ? '(ON)' : ''}
         </button>
@@ -85,10 +101,7 @@ export const App = () => {
       <div className="buttons">
         {isModified && (
           <div className="buttons">
-            <button
-              className="button is-danger"
-              onClick={reset}
-            >
+            <button className="button is-danger" onClick={reset} type="button">
               Reset
             </button>
           </div>
@@ -102,11 +115,9 @@ export const App = () => {
           </li>
         ))}
       </ul>
-
     </div>
   );
 };
-
 
 /*   <div className="section content">
     <div className="buttons">
